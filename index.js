@@ -40,7 +40,7 @@ const defaultSpinner = {
 class YoctoSpinner {
 	#frames;
 	#interval;
-	#currentFrame = 0;
+	#currentFrame = -1;
 	#timer;
 	#text;
 	#stream;
@@ -48,6 +48,7 @@ class YoctoSpinner {
 	#lines = 0;
 	#exitHandlerBound;
 	#isInteractive;
+	#lastSpinnerFrameTime = 0;
 
 	constructor(options = {}) {
 		const spinner = options.spinner ?? defaultSpinner;
@@ -159,6 +160,15 @@ class YoctoSpinner {
 	}
 
 	#render() {
+		const currentTime = Date.now();
+
+		// Ensure we only update the spinner frame at the wanted interval,
+		// even if the render method is called more often.
+		if (this.#currentFrame === -1 || currentTime - this.#lastSpinnerFrameTime >= this.#interval) {
+			this.#currentFrame = (this.#currentFrame + 1) % this.#frames.length;
+			this.#lastSpinnerFrameTime = currentTime;
+		}
+
 		const applyColor = yoctocolors[this.#color] ?? yoctocolors.cyan;
 		const frame = this.#frames[this.#currentFrame];
 		let string = `${applyColor(frame)} ${this.#text}`;
@@ -169,7 +179,6 @@ class YoctoSpinner {
 
 		this.clear();
 		this.#write(string);
-		this.#currentFrame = (this.#currentFrame + 1) % this.#frames.length;
 
 		if (this.#isInteractive) {
 			this.#lines = this.#lineCount(string);
