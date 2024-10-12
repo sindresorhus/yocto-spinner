@@ -1,6 +1,6 @@
 {
 	"name": "yocto-spinner",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"description": "Tiny terminal spinner",
 	"license": "MIT",
 	"repository": "sindresorhus/yocto-spinner",
