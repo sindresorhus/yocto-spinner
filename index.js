@@ -128,8 +128,8 @@ class YoctoSpinner {
 		return this.#text;
 	}
 
-	set text(value = '') {
-		this.#text = value;
+	set text(value) {
+		this.#text = value ?? '';
 		this.#render();
 	}
 
