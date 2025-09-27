@@ -47,7 +47,7 @@ class YoctoSpinner {
 	#timer;
 	#text;
 	#stream;
-	#color;
+	#color = 'cyan';
 	#lines = 0;
 	#exitHandlerBound;
 	#isInteractive;
@@ -60,7 +60,7 @@ class YoctoSpinner {
 		this.#interval = spinner.interval;
 		this.#text = options.text ?? '';
 		this.#stream = options.stream ?? process.stderr;
-		this.#color = options.color ?? 'cyan';
+		this.#color = this.#useColor(options.color);
 		this.#isInteractive = isInteractive(this.#stream);
 		this.#exitHandlerBound = this.#exitHandler.bind(this);
 	}
@@ -149,7 +149,7 @@ class YoctoSpinner {
 	}
 
 	set color(value) {
-		this.#color = value;
+		this.#color = this.#useColor(value);
 		this.#render();
 	}
 
@@ -245,6 +245,15 @@ class YoctoSpinner {
 		// SIGTERM: 128 + 15
 		const exitCode = signal === 'SIGINT' ? 130 : (signal === 'SIGTERM' ? 143 : 1);
 		process.exit(exitCode);
+	}
+
+	#useColor(name) {
+		if (['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white', 'gray'].includes(name)) {
+			return name;
+		}
+
+		// Use current spinner color
+		return this.#color;
 	}
 }
 

@@ -203,3 +203,95 @@ test('spinner in non-interactive mode only renders on text changes', async t => 
 	t.is(lines[1], '- changed text');
 	t.is(lines[2], 'final text');
 });
+
+// eslint-disable-next-line no-control-regex -- This is right?
+const nonSgrRe = /\u001B(?!\[\d+?m)/g;
+
+test('Use default color (cyan) if color option is NOT provided', async t => {
+	const stream = getPassThroughStream();
+	stream.isTTY = false;
+
+	const output = getStream(stream);
+
+	const spinner = yoctoSpinner({
+		stream,
+		text: 'initial text',
+		spinner: {
+			frames: ['-'],
+			interval: 10,
+		},
+	});
+
+	spinner.start();
+
+	await delay(50);
+
+	spinner.stop();
+	stream.end();
+
+	const out = await output;
+	// eslint-disable-next-line unicorn/prefer-string-replace-all -- Strip Non-SGR
+	const result = out.replace(nonSgrRe, '').trim();
+
+	t.is(result, `${yoctocolors.cyan('-')} initial text`);
+});
+
+test('Use default color (cyan) if color option is NOT use foreground colors', async t => {
+	const stream = getPassThroughStream();
+	stream.isTTY = false;
+
+	const output = getStream(stream);
+
+	const spinner = yoctoSpinner({
+		stream,
+		text: 'initial text',
+		spinner: {
+			frames: ['-'],
+			interval: 10,
+		},
+		color: 'bgBlue',
+	});
+
+	spinner.start();
+
+	await delay(50);
+
+	spinner.stop();
+	stream.end();
+
+	const out = await output;
+	// eslint-disable-next-line unicorn/prefer-string-replace-all -- Strip Non-SGR
+	const result = out.replace(nonSgrRe, '').trim();
+
+	t.is(result, `${yoctocolors.cyan('-')} initial text`);
+});
+
+test('Can use custum color', async t => {
+	const stream = getPassThroughStream();
+	stream.isTTY = false;
+
+	const output = getStream(stream);
+
+	const spinner = yoctoSpinner({
+		stream,
+		text: 'initial text',
+		spinner: {
+			frames: ['-'],
+			interval: 10,
+		},
+		color: 'green',
+	});
+
+	spinner.start();
+
+	await delay(50);
+
+	spinner.stop();
+	stream.end();
+
+	const out = await output;
+	// eslint-disable-next-line unicorn/prefer-string-replace-all -- Strip Non-SGR
+	const result = out.replace(nonSgrRe, '').trim();
+
+	t.is(result, `${yoctocolors.green('-')} initial text`);
+});
