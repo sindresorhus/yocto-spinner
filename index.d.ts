@@ -51,6 +51,15 @@ export type Options = {
 	@default process.stderr
 	*/
 	readonly stream?: Writable;
+
+	/**
+	Whether to handle `SIGINT` and `SIGTERM` by stopping the spinner and exiting the process.
+
+	Disable this when the application needs to manage process signals itself.
+
+	@default true
+	*/
+	readonly handleSignals?: boolean;
 };
 
 export type Spinner = {

@@ -50,6 +50,7 @@ class YoctoSpinner {
 	#interval;
 	#currentFrame = -1;
 	#timer;
+	#handleSignals;
 	#text;
 	#stream;
 	#color;
@@ -75,6 +76,7 @@ class YoctoSpinner {
 
 		this.#frames = spinner.frames;
 		this.#interval = spinner.interval ?? defaultSpinner.interval;
+		this.#handleSignals = options.handleSignals ?? true;
 		this.#text = options.text ?? '';
 		this.#stream = options.stream ?? process.stderr;
 		this.#color = options.color ?? 'cyan';
@@ -392,11 +394,19 @@ class YoctoSpinner {
 	}
 
 	#subscribeToProcessEvents() {
+		if (!this.#handleSignals) {
+			return;
+		}
+
 		process.once('SIGINT', this.#exitHandlerBound);
 		process.once('SIGTERM', this.#exitHandlerBound);
 	}
 
 	#unsubscribeFromProcessEvents() {
+		if (!this.#handleSignals) {
+			return;
+		}
+
 		process.off('SIGINT', this.#exitHandlerBound);
 		process.off('SIGTERM', this.#exitHandlerBound);
 	}

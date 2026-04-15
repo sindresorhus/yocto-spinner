@@ -107,6 +107,46 @@ test('spinner does not hook non-interactive streams', t => {
 	t.is(stream.write, originalWrite);
 });
 
+test('spinner subscribes to process signals by default', t => {
+	const initialSigintCount = process.rawListeners('SIGINT').length;
+	const initialSigtermCount = process.rawListeners('SIGTERM').length;
+
+	const stream = getPassThroughStream();
+	const spinner = yoctoSpinner({stream, text: 'foo'});
+
+	spinner.start();
+
+	t.is(process.rawListeners('SIGINT').length, initialSigintCount + 1);
+	t.is(process.rawListeners('SIGTERM').length, initialSigtermCount + 1);
+
+	spinner.stop();
+
+	t.is(process.rawListeners('SIGINT').length, initialSigintCount);
+	t.is(process.rawListeners('SIGTERM').length, initialSigtermCount);
+});
+
+test('spinner can disable process signal handling', t => {
+	const initialSigintCount = process.rawListeners('SIGINT').length;
+	const initialSigtermCount = process.rawListeners('SIGTERM').length;
+
+	const stream = getPassThroughStream();
+	const spinner = yoctoSpinner({
+		stream,
+		text: 'foo',
+		handleSignals: false,
+	});
+
+	spinner.start();
+
+	t.is(process.rawListeners('SIGINT').length, initialSigintCount);
+	t.is(process.rawListeners('SIGTERM').length, initialSigtermCount);
+
+	spinner.stop();
+
+	t.is(process.rawListeners('SIGINT').length, initialSigintCount);
+	t.is(process.rawListeners('SIGTERM').length, initialSigtermCount);
+});
+
 test('spinner starts with custom text', async t => {
 	const output = await runSpinner(spinner => spinner.stop(), {text: 'custom'});
 	t.is(output, '- custom\n');
