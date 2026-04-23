@@ -101,9 +101,9 @@ The stream to which the spinner is written.
 Type: `boolean`\
 Default: `true`
 
-Whether to handle `SIGINT` and `SIGTERM` by stopping the spinner and exiting the process.
+Whether to register `SIGINT` and `SIGTERM` listeners that stop the spinner and explicitly exit the process.
 
-Disable this when the application needs to manage process signals itself.
+Disable this when the application needs to manage those signals itself.
 
 ### Instance methods
 
