@@ -76,7 +76,7 @@ class YoctoSpinner {
 
 		this.#frames = spinner.frames;
 		this.#interval = spinner.interval ?? defaultSpinner.interval;
-		this.#handleSignals = options.handleSignals ?? true;
+		this.#handleSignals = options.handleSignals ?? true; // SOMEDAY: Remove this option if Node.js ever adds passive signal listeners: https://github.com/nodejs/node/issues/62909
 		this.#text = options.text ?? '';
 		this.#stream = options.stream ?? process.stderr;
 		this.#color = options.color ?? 'cyan';
