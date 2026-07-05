@@ -248,6 +248,30 @@ test('spinner accounts for ANSI escape codes when computing line breaks', async 
 	}
 });
 
+test('spinner counts lines correctly for hyperlinks with special URI characters', async t => {
+	let clearLineCount = 0;
+
+	const stream = new PassThrough();
+	stream.clearLine = () => {
+		clearLineCount += 1;
+	};
+
+	stream.cursorTo = () => {};
+	stream.moveCursor = () => {};
+	stream.isTTY = true;
+
+	// OSC 8 hyperlink with a short visible label (`link`) but a URI that both contains a character `stripVTControlCharacters()` fails on (`(`) and is far wider than the terminal, so it must still be counted as a single line.
+	const uri = 'https://example.com/(' + 'x'.repeat(200);
+	const text = `]8;;${uri}link]8;;`;
+
+	await runSpinner(spinner => spinner.stop(), {}, {
+		stream,
+		text,
+	});
+
+	t.is(clearLineCount, 1);
+});
+
 test('spinner in non-interactive mode only renders on text changes', async t => {
 	const stream = getPassThroughStream();
 	stream.isTTY = false;

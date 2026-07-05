@@ -43,6 +43,10 @@ const defaultSpinner = {
 const SYNCHRONIZED_OUTPUT_ENABLE = '\u001B[?2026h';
 const SYNCHRONIZED_OUTPUT_DISABLE = '\u001B[?2026l';
 
+// `stripVTControlCharacters()` fails to strip OSC 8 hyperlinks whose URI contains characters such as `(`, leaving the URI in the measured text and inflating the line count. Strip OSC sequences ourselves first. https://github.com/sindresorhus/yocto-spinner/issues/18
+// eslint-disable-next-line no-control-regex
+const oscSequenceRegex = /][\s\S]*?(?:|\\)/g;
+
 const activeHooksPerStream = new Set();
 
 class YoctoSpinner {
@@ -371,7 +375,7 @@ class YoctoSpinner {
 
 	#lineCount(text) {
 		const width = this.#stream.columns ?? 80;
-		const lines = stripVTControlCharacters(text).split('\n');
+		const lines = stripVTControlCharacters(text.replaceAll(oscSequenceRegex, '')).split('\n');
 
 		let lineCount = 0;
 		for (const line of lines) {
