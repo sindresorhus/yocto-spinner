@@ -374,7 +374,7 @@ class YoctoSpinner {
 	}
 
 	#lineCount(text) {
-		const width = this.#stream.columns ?? 80;
+		const width = this.#stream.columns || 80; // `columns` can be 0
 		const lines = stripVTControlCharacters(text.replaceAll(oscSequenceRegex, '')).split('\n');
 
 		let lineCount = 0;
