@@ -272,6 +272,26 @@ test('spinner counts lines correctly for hyperlinks with special URI characters'
 	t.is(clearLineCount, 1);
 });
 
+test('spinner does not loop forever when the stream reports zero columns', async t => {
+	let clearLineCount = 0;
+
+	const stream = new PassThrough();
+	stream.clearLine = () => {
+		clearLineCount += 1;
+	};
+
+	stream.cursorTo = () => {};
+	stream.moveCursor = () => {};
+	stream.isTTY = true;
+	stream.columns = 0;
+
+	await runSpinner(spinner => spinner.stop(), {}, {
+		stream,
+	});
+
+	t.is(clearLineCount, 1);
+});
+
 test('spinner in non-interactive mode only renders on text changes', async t => {
 	const stream = getPassThroughStream();
 	stream.isTTY = false;
