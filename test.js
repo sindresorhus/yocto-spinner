@@ -1,10 +1,10 @@
 import {setTimeout as delay} from 'node:timers/promises';
 import process from 'node:process';
 import {PassThrough} from 'node:stream';
+import {styleText} from 'node:util';
 import getStream from 'get-stream';
 import test from 'ava';
 import stripAnsi from 'strip-ansi';
-import yoctocolors from 'yoctocolors';
 import yoctoSpinner from './index.js';
 
 delete process.env.CI;
@@ -236,7 +236,7 @@ test('spinner accounts for ANSI escape codes when computing line breaks', async 
 
 		let text = '';
 		for (let i = 0; i < scenario.textLength; i++) {
-			text += yoctocolors.blue('a');
+			text += styleText('blue', 'a');
 		}
 
 		// eslint-disable-next-line no-await-in-loop

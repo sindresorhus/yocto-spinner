@@ -1,6 +1,5 @@
 import process from 'node:process';
-import {stripVTControlCharacters} from 'node:util';
-import yoctocolors from 'yoctocolors';
+import {inspect, stripVTControlCharacters, styleText} from 'node:util';
 
 const isUnicodeSupported = process.platform !== 'win32'
 	|| Boolean(process.env.WT_SESSION) // Windows Terminal
@@ -12,10 +11,10 @@ const isInteractive = stream => Boolean(
 	&& !('CI' in process.env),
 );
 
-const infoSymbol = yoctocolors.blue(isUnicodeSupported ? 'ℹ' : 'i');
-const successSymbol = yoctocolors.green(isUnicodeSupported ? '✔' : '√');
-const warningSymbol = yoctocolors.yellow(isUnicodeSupported ? '⚠' : '‼');
-const errorSymbol = yoctocolors.red(isUnicodeSupported ? '✖' : '×');
+const infoSymbol = styleText('blue', isUnicodeSupported ? 'ℹ' : 'i');
+const successSymbol = styleText('green', isUnicodeSupported ? '✔' : '√');
+const warningSymbol = styleText('yellow', isUnicodeSupported ? '⚠' : '‼');
+const errorSymbol = styleText('red', isUnicodeSupported ? '✖' : '×');
 
 const defaultSpinner = {
 	frames: isUnicodeSupported
@@ -345,9 +344,9 @@ class YoctoSpinner {
 			this.#lastSpinnerFrameTime = now;
 		}
 
-		const applyColor = yoctocolors[this.#color] ?? yoctocolors.cyan;
+		const color = inspect.colors[this.#color] ? this.#color : 'cyan';
 		const frame = this.#frames[this.#currentFrame];
-		let string = `${applyColor(frame)} ${this.#text}`;
+		let string = `${styleText(color, frame)} ${this.#text}`;
 
 		if (!this.#isInteractive) {
 			string += '\n';
